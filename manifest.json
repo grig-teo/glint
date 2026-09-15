@@ -5,7 +5,7 @@
   "description": "Minimalist AI writing assistant. Select text, click \u2728 Fix, the text is rewritten in place. Bring your own API key.",
   "minimum_chrome_version": "111",
 
-  "permissions": ["storage", "activeTab"],
+  "permissions": ["storage"],
 
   "host_permissions": ["<all_urls>"],
 

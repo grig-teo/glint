@@ -1,12 +1,17 @@
 #!/usr/bin/env bash
 #
-# Build a distributable Glint zip.
+# Build the distributable Glint zips.
 #
 #   ./tools/package.sh
 #
-# Produces dist/glint-<version>.zip containing a top-level glint-<version>/
-# folder. Unzipping it gives a directory with manifest.json at its root, ready
-# for "Load unpacked" — or for uploading to the Chrome Web Store.
+# Produces two artifacts:
+#
+#   dist/glint-<version>.zip        for "Load unpacked": unzipping gives a
+#                                   glint-<version>/ folder with manifest.json
+#                                   inside it, plus README and LICENSE.
+#   dist/glint-<version>-store.zip  for the Chrome Web Store upload, which
+#                                   requires manifest.json at the ROOT of the
+#                                   archive and ignores documentation files.
 #
 set -euo pipefail
 
@@ -20,7 +25,7 @@ STAGE="${DIST}/${NAME}"
 # Everything the browser actually loads. Dev tooling stays out of the package.
 RUNTIME=(manifest.json background.js content.js popup.html popup.css popup.js icons)
 
-rm -rf "${STAGE}" "${DIST}/${NAME}.zip"
+rm -rf "${STAGE}" "${DIST}/${NAME}.zip" "${DIST}/${NAME}-store.zip"
 mkdir -p "${STAGE}"
 
 for item in "${RUNTIME[@]}"; do
@@ -32,6 +37,11 @@ cp README.md LICENSE "${STAGE}/"
 # byte-identical zips.
 (cd "${DIST}" && zip -qrX "${NAME}.zip" "${NAME}" -x '*.DS_Store')
 
+# Store upload: manifest.json first-class at the archive root.
+(cd "${STAGE}" && zip -qrX "../${NAME}-store.zip" "${RUNTIME[@]}" -x '*.DS_Store')
+
 echo "packaged dist/${NAME}.zip"
+unzip -l "${DIST}/${NAME}.zip" | tail -3 | sed 's/^/  /'
 echo
-unzip -l "${DIST}/${NAME}.zip" | sed 's/^/  /'
+echo "packaged dist/${NAME}-store.zip  (Chrome Web Store upload)"
+unzip -l "${DIST}/${NAME}-store.zip" | sed 's/^/  /'

@@ -359,9 +359,13 @@ test('manifest declares every referenced file', () => {
   }
 });
 
-test('manifest is Manifest V3 with the expected permissions', () => {
+test('manifest is Manifest V3 with the minimum permissions', () => {
   assert.equal(manifest.manifest_version, 3);
-  assert.deepEqual(manifest.permissions, ['storage', 'activeTab']);
+  // activeTab was declared but never used: tabs.query only needs the id, and
+  // tabs.sendMessage is covered by the host permission. Store review asks you
+  // to justify every permission, so it is gone.
+  assert.deepEqual(manifest.permissions, ['storage']);
+  assert.deepEqual(manifest.host_permissions, ['<all_urls>']);
   assert.ok(manifest.content_scripts[0].matches.length > 0);
 });
 

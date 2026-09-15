@@ -470,23 +470,32 @@
     mirror.style.height = 'auto';
     mirror.style.overflow = 'hidden';
 
-    mirror.textContent = el.value.slice(0, index);
-    const marker = document.createElement('span');
-    // A zero-width space keeps an empty marker measurable at the caret position.
-    marker.textContent = el.value.slice(index) || '\u200b';
-    mirror.appendChild(marker);
+    mirror.textContent = '';
+    const content = document.createTextNode(el.value);
+    mirror.appendChild(content);
 
     document.documentElement.appendChild(mirror);
 
     let anchor;
     try {
       const mirrorRect = mirror.getBoundingClientRect();
-      const markerRect = marker.getBoundingClientRect();
-      const lineHeight =
-        markerRect.height || parseFloat(style.lineHeight) || (parseFloat(style.fontSize) || 14) * 1.2;
 
-      const left = elRect.left + (markerRect.left - mirrorRect.left) - el.scrollLeft;
-      const top = elRect.top + (markerRect.top - mirrorRect.top) - el.scrollTop;
+      // A collapsed Range at the caret offset is the accurate primitive here.
+      // The obvious alternative — appending a span holding the *remaining*
+      // text and measuring it — is wrong as soon as that remainder wraps: the
+      // span's bounding box then starts at the content-box left edge, so the
+      // button jumps to the left margin instead of following the caret.
+      const caret = clamp(index, 0, el.value.length);
+      const range = document.createRange();
+      range.setStart(content, caret);
+      range.setEnd(content, caret);
+      const rect = range.getBoundingClientRect();
+
+      const lineHeight =
+        rect.height || parseFloat(style.lineHeight) || (parseFloat(style.fontSize) || 14) * 1.2;
+
+      const left = elRect.left + (rect.left - mirrorRect.left) - el.scrollLeft;
+      const top = elRect.top + (rect.top - mirrorRect.top) - el.scrollTop;
       anchor = { left, top, bottom: top + lineHeight };
     } finally {
       mirror.remove();

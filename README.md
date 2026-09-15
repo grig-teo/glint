@@ -30,6 +30,11 @@ just outside their right edge instead, so it never covers the text.
 
 Both modes are undoable with the normal <kbd>⌘/Ctrl</kbd>+<kbd>Z</kbd>.
 
+![The ✨ Fix button next to a highlighted sentence](docs/screenshots/01-selection.png)
+
+More in [`docs/screenshots/`](docs/screenshots): the corner icon in a dark-themed field, the text
+after one click, and the settings panel.
+
 ### Themes
 
 The widget ships two palettes and picks one at all times — the value written to the DOM is always
@@ -226,7 +231,6 @@ glint/
 | Permission | Reason |
 | --- | --- |
 | `storage` | Save your key, endpoint, model and prompt locally. |
-| `activeTab` | Current-tab access from the popup, as a minimal fallback. Glint does not use `chrome.scripting` or read your tabs. |
 | `host_permissions: <all_urls>` | Two jobs: inject the content script on every page, and let the service worker POST to **whatever endpoint you configure** (a fixed allow-list cannot work for BYOK). |
 
 If you would rather not grant site-wide host access, swap `host_permissions` for
@@ -306,3 +310,8 @@ sitting: no framework, no bundler, no dependency tree.
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+Privacy policy: [PRIVACY.md](PRIVACY.md) — Glint has no servers, no accounts and no telemetry.
+
+Publishing this extension (Chrome Web Store listing copy, permission justifications, privacy
+declarations and a checklist): [docs/CHROME_WEB_STORE.md](docs/CHROME_WEB_STORE.md).
