@@ -52,6 +52,31 @@ Once your text reaches that provider, **their** privacy policy and terms govern
 it. If you are fixing sensitive text, choose a provider (or a local model) whose
 handling of data you are comfortable with.
 
+## Your data: access and deletion
+
+Everything Glint stores lives in your own browser profile, so you are always the
+one holding it:
+
+- **See it** — open Glint's settings; every value it holds is displayed there in
+  plain text (the API key field has a *Show* button).
+- **Change or clear it** — edit or empty any field in Glint's settings and save.
+  Clearing the API key field and saving removes the key.
+- **Delete everything** — uninstalling Glint from `chrome://extensions` deletes
+  all of its stored settings, including the API key. Glint has no server and no
+  backup, so nothing is retained anywhere after that.
+- **Text you asked Glint to rewrite** — that text went to the provider you chose,
+  and only they hold it. Glint keeps no copy, no log and no history of it. To have
+  it deleted, contact that provider under their policy.
+
+There is no account to close and no data request to file, because the developer
+never receives any of it. Questions are still welcome via the issue tracker
+listed at the end of this document.
+
+## Data retention
+
+Glint retains your settings until you delete them as described above. It retains
+nothing else, because it collects nothing else.
+
 ## What Glint does not do
 
 - No analytics, crash reporting, or usage tracking of any kind.
