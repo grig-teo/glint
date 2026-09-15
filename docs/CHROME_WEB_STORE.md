@@ -149,7 +149,16 @@ to 5). Ready-made ones are in [`screenshots/`](screenshots/):
 | `03-result.png` | The same text after one click |
 | `04-settings.png` | The settings panel with provider presets |
 
-**Store icon:** `icons/icon128.png` (already in the package).
+**Store icon**
+
+The store takes the icon from the **package**, not from a separate upload field, so
+`icons/icon128.png` is what gets shown. It is built to Google's guidance: a 128x128 PNG whose
+artwork is 96x96 with 16px of transparent padding, so it carries the same visual weight as the
+icons around it. Regenerate with `python3 tools/make_icons.py` (use `--full-bleed` only if you
+deliberately want square tiles).
+
+Note that the 16/32/48px icons stay full bleed: those are the toolbar sizes, where padding would
+make the mark too small to read.
 
 ---
 
