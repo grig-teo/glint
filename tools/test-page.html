@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Glint — self test</title>
+    <style>
+      :root { color-scheme: light dark; }
+      body {
+        margin: 0 auto;
+        padding: 48px 24px 96px;
+        max-width: 720px;
+        background: #fff;
+        color: #14161a;
+        font: 15px/1.6 ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      }
+      @media (prefers-color-scheme: dark) {
+        body { background: #101114; color: #eceef2; }
+      }
+      h1 { font-size: 22px; letter-spacing: -0.01em; margin: 0 0 4px; }
+      .lede { color: #6b7280; margin: 0 0 28px; }
+      @media (prefers-color-scheme: dark) { .lede { color: #9aa1ad; } }
+      ol { color: #6b7280; font-size: 13.5px; padding-left: 20px; }
+      @media (prefers-color-scheme: dark) { ol { color: #9aa1ad; } }
+      h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; margin: 34px 0 8px; opacity: 0.6; }
+      .note { font-size: 12.5px; opacity: 0.6; margin: 6px 0 0; }
+      textarea, input[type="text"], input[type="password"], .ed {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 11px 12px;
+        border: 1px solid rgba(128, 128, 128, 0.35);
+        border-radius: 10px;
+        background: transparent;
+        color: inherit;
+        font: 15px/1.6 inherit;
+      }
+      textarea { height: 110px; resize: vertical; }
+      .ed { min-height: 70px; }
+      input[type="text"].narrow { width: 96px; }
+      .row { display: flex; gap: 12px; align-items: center; }
+      .row input { flex: 1 1 0; min-width: 0; }
+      .expected { font-size: 12.5px; color: #0f7b46; }
+      .expected.no { color: #b4232a; }
+      @media (prefers-color-scheme: dark) {
+        .expected { color: #57c98d; }
+        .expected.no { color: #ff8b8f; }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Glint self test</h1>
+    <p class="lede">A plain page with every kind of field Glint supports.</p>
+
+    <ol>
+      <li>Click into a filled field below (don't select anything).</li>
+      <li>A small <strong>✨</strong> should appear in that field's top-right corner.</li>
+      <li>Select some text instead → the labelled <strong>✨ Fix</strong> button should appear.</li>
+      <li>Click it. The text is replaced in place. <kbd>⌘Z</kbd> undoes it.</li>
+    </ol>
+
+    <h2>1 · Textarea — filled</h2>
+    <textarea id="ta">Dear team, i beleive we should of shipped this eariler.</textarea>
+    <p class="expected">Expected: ✨ in the top-right corner</p>
+
+    <h2>2 · Text input — filled</h2>
+    <input id="in" type="text" value="this are a test of the glint conection" />
+    <p class="expected">Expected: ✨ in the top-right corner</p>
+
+    <h2>3 · contenteditable — filled</h2>
+    <div id="ed" class="ed" contenteditable="true">The quik brown fox jumpd over the lazy dog.</div>
+    <p class="expected">Expected: ✨ in the top-right corner</p>
+
+    <h2>4 · Textarea — empty</h2>
+    <textarea id="empty" placeholder="Type here and the icon should appear"></textarea>
+    <p class="expected no">Expected: no icon until you type</p>
+
+    <h2>5 · Narrow input (96px)</h2>
+    <input id="narrow" class="narrow" type="text" value="hi there" />
+    <p class="expected">Expected: ✨ just outside the right edge, so it never covers text</p>
+
+    <h2>6 · Fields Glint ignores on purpose</h2>
+    <div class="row">
+      <input id="pw" type="password" value="not-a-real-password" />
+      <input id="ro" type="text" value="read only" readonly />
+    </div>
+    <p class="expected no">Expected: no icon (password and readonly are excluded)</p>
+  </body>
+</html>

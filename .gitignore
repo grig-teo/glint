@@ -1,0 +1,15 @@
+# macOS
+.DS_Store
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Node (the extension itself has no dependencies)
+node_modules/
+
+# Local packaging output
+*.zip
+*.crx
+*.pem
