@@ -218,12 +218,19 @@ for Glint and errs on the side of disclosure, which is what reviewers want.
 | Used or transferred to determine creditworthiness or for lending | **No** |
 | Certified: data handling complies with the Developer Program Policies | Yes |
 
-**Single purpose description** (required, one or two sentences)
+**Single purpose description** (required, max 1,000 characters)
+
+The reviewer's question is narrowness: is this one purpose, and do the permissions follow from it?
+This answers both. 987 characters.
 
 ```
-Glint rewrites text the user selects or is editing in a web page field, by
-sending that text to an AI API endpoint the user configures with their own key,
-and pasting the result back into the same field.
+Glint has a single, narrow purpose: to rewrite the text a user is composing in a text field on a web page, using an AI model the user configures and pays for.
+
+How it is used. The user highlights text, or clicks into a field, then clicks the Glint button beside it. Glint sends only that text to the API endpoint the user entered in its settings, and writes the model's reply back into the same field. Nothing is sent unless the user clicks the button.
+
+Why the permissions are needed. The host permission is required because the content script must reach whichever page the user is writing on, and because the request goes to whichever API endpoint the user configured; a bring-your-own-key tool cannot ship a fixed list of endpoints. Storage keeps the user's own API key, endpoint, model and prompt on their device.
+
+Glint has no other feature. It does not read pages in the background, does not collect analytics, does not send anything to the developer, and has no server of its own.
 ```
 
 **Permission justifications** (required for each permission in the manifest)
