@@ -149,6 +149,19 @@ are already 1280x800 truecolour PNGs (colour type 2, no `tRNS` chunk), so they u
 | `02-field-icon.png` | The corner icon in a field, no selection needed |
 | `03-result.png` | The same text after one click |
 | `04-settings.png` | The settings panel with provider presets |
+| `05-providers.png` | DeepSeek configured, with the provider presets called out |
+
+That is the maximum of 5. A raw capture (portrait, usually RGBA) cannot be uploaded as-is, so
+`tools/make-store-panel.py` composites one into a compliant landscape panel and refuses to write a
+file that breaks the format rules:
+
+```bash
+python3 tools/make-store-panel.py --input ~/Desktop/popup.png \
+  --output docs/screenshots/05-providers.png --theme dark \
+  --title "Any provider, your key" --lead "Presets fill in the endpoint and model for you." \
+  --accent "OpenAI · DeepSeek · Groq · OpenRouter" \
+  --body "Test the connection in one click"
+```
 
 **Store icon**
 
