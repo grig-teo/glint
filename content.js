@@ -44,6 +44,8 @@
   const SETTLE_MS = 90; // debounce for selectionchange storms
   const TOAST_MS = 4200;
   const SUCCESS_MS = 850;
+  /** An error state lingers long enough to be read, then gets out of the way. */
+  const ERROR_HIDE_MS = 6000;
 
   /** Input types that hold prose worth rewriting. */
   const TEXT_INPUT_TYPES = new Set(['text', 'search', 'url', 'email', 'tel']);
@@ -63,6 +65,7 @@
   let settleTimer = null;
   let toastTimer = null;
   let successTimer = null;
+  let errorTimer = null;
   let dismissedSignature = null;
   /** While the user drags a selection we stay hidden, like native spellcheck. */
   let pointerSelecting = false;
@@ -716,13 +719,15 @@
 
     busy = true;
     clearTimeout(successTimer);
+    clearTimeout(errorTimer);
     setState('busy');
 
     let response;
     try {
       if (!chrome.runtime?.id) throw new Error('stale-context');
-      response = await chrome.runtime.sendMessage({ type: 'GLINT_REWRITE', text: info.text });
-    } catch {
+      response = await requestRewrite(info.text);
+    } catch (error) {
+      console.warn('[Glint] rewrite request failed:', error);
       response = {
         ok: false,
         error: 'Glint was updated or reloaded. Refresh this page and try again.'
@@ -734,6 +739,9 @@
     if (!response || !response.ok) {
       setState('error');
       showToast(response?.error || 'Something went wrong talking to the model.', 'error');
+      // A button parked in the error state sits on top of the page and swallows
+      // clicks meant for whatever is underneath it, so retire it.
+      scheduleErrorHide(info);
       return;
     }
 
@@ -741,6 +749,7 @@
     if (!output) {
       setState('error');
       showToast('The model returned an empty response.', 'error');
+      scheduleErrorHide(info);
       return;
     }
 
@@ -757,6 +766,7 @@
     if (!applied) {
       setState('error');
       showToast('The text changed while Glint was thinking, so nothing was replaced.', 'error');
+      scheduleErrorHide(info);
       return;
     }
 
@@ -766,6 +776,43 @@
       flashUntil = 0;
       if (!busy) hide();
     }, SUCCESS_MS);
+  }
+
+  /**
+   * Ask the service worker to do the rewrite.
+   *
+   * An MV3 service worker is evicted when idle, and waking it up races the
+   * first message: the send can fail with "Receiving end does not exist" even
+   * though the extension is perfectly healthy. That is a cold start, not an
+   * error — retry once. Anything else (a reloaded extension, a context that no
+   * longer exists) is reported as-is so the user gets the right advice.
+   */
+  async function requestRewrite(text) {
+    const message = { type: 'GLINT_REWRITE', text };
+    try {
+      return await chrome.runtime.sendMessage(message);
+    } catch (error) {
+      if (!isColdWorker(error)) throw error;
+      console.warn('[Glint] cold service worker, retrying once:', error?.message || error);
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      return chrome.runtime.sendMessage(message);
+    }
+  }
+
+  function isColdWorker(error) {
+    const text = String(error?.message || error || '');
+    return /receiving end does not exist|could not establish connection|message port closed/i.test(text);
+  }
+
+  /**
+   * Let the user read the failure, then clear the button away so it stops
+   * overlapping page content. Re-selecting the text brings it straight back.
+   */
+  function scheduleErrorHide(info) {
+    clearTimeout(errorTimer);
+    errorTimer = setTimeout(() => {
+      if (!busy && pending === info) hide();
+    }, ERROR_HIDE_MS);
   }
 
   /**

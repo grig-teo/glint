@@ -323,8 +323,13 @@ async function requestRewrite(text, settings) {
     if (error?.name === 'AbortError') {
       throw new GlintError('The request timed out. The model may be slow or unreachable.', 'TIMEOUT');
     }
+    // Loopback endpoints (Ollama, LM Studio) hit a different class of problem
+    // than a public API: the browser itself may refuse the request.
+    const local = /^https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])/i.test(url);
     throw new GlintError(
-      `Could not reach ${host}. Check the endpoint URL, your connection, and that the host allows extension requests.`,
+      local
+        ? `Could not reach ${host}. Make sure the local server is running, and note that some browsers block extension requests to local addresses — try the 127.0.0.1 form instead of localhost.`
+        : `Could not reach ${host}. Check the endpoint URL, your connection, and that the host allows extension requests.`,
       'NETWORK'
     );
   } finally {
