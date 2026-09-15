@@ -233,12 +233,36 @@ Why the permissions are needed. The host permission is required because the cont
 Glint has no other feature. It does not read pages in the background, does not collect analytics, does not send anything to the developer, and has no server of its own.
 ```
 
-**Permission justifications** (required for each permission in the manifest)
+**Permission justifications** (required — one field per permission, max 1,000 characters each)
 
-| Permission | Justification to paste |
-| --- | --- |
-| `storage` | Stores the user's own settings — API key, API endpoint, model name, system prompt and theme — locally in their browser profile so they persist between sessions. |
-| Host permission `<all_urls>` | Two functions require it. (1) The content script must detect text fields and render the "Fix" button on whatever site the user is writing on; the extension cannot know in advance which sites those are. (2) The service worker must be able to POST the selected text to whichever AI API endpoint the user configures — a bring-your-own-key extension cannot ship a fixed allow-list of endpoints. The extension reads page content only for the field the user is actively editing, and only sends text when the user clicks the button. |
+The dashboard warns that requesting host-list permissions *"may require detailed review, which will
+delay publishing"*. That is expected for a bring-your-own-key tool and is not a rejection: the
+reviewer is checking that the broad host access follows from the single purpose. Both answers below
+are written to make that link explicit.
+
+`storage` — 708 characters:
+
+```
+Glint uses storage to save the user's own configuration locally in their browser profile, so it persists between sessions: their API key, the API endpoint URL, the model name, the system prompt (the rewrite mode), and the light/dark theme preference. Nothing else is stored.
+
+The extension deliberately uses storage.local rather than storage.sync so that the API key is never uploaded to a Google account; it stays on the user's own device. These values are read by the service worker when the user clicks the rewrite button, and the user can change or clear all of them at any time in the extension's settings page.
+
+No page content, browsing history, analytics or personal data are ever written to storage.
+```
+
+Host permission `<all_urls>` — 965 characters:
+
+```
+Glint rewrites text the user is composing in a text field. Host access is needed for exactly two reasons.
+
+1) Detection on the page. The content script must recognise text fields and show the rewrite button on whichever page the user is writing on. Glint works wherever a user writes - webmail, social media, a CMS, a web form - so the host list cannot be enumerated in advance. The script reads only the field the user has focused.
+
+2) Reaching the configured API. Glint is a bring-your-own-key tool: requests go to the AI provider the user enters in its settings, which may be OpenAI, DeepSeek, Groq, Anthropic, a self-hosted gateway, or a model on the user's own machine. A fixed allow-list of hostnames is therefore impossible.
+
+Glint declares <all_urls> for exactly these two reasons and cannot narrow it further.
+
+No request is made until the user clicks the button; page content is never read in the background; nothing is collected or sent to the developer.
+```
 
 **Remote code:** answer **"No, I am not using remote code."** Glint ships no
 bundler output fetched at runtime, no CDN scripts, and no `eval`. Everything is
