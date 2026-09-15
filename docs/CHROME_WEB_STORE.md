@@ -163,6 +163,24 @@ python3 tools/make-store-panel.py --input ~/Desktop/popup.png \
   --body "Test the connection in one click"
 ```
 
+**Promotional images**
+
+The **small promotional tile (440x280) is mandatory**, and listings without one are displayed
+*after* those that have one. The optional 1400x560 marquee is what makes an extension eligible for
+featuring on the store front page.
+
+Google's guidance for these is specific: saturated colours, fill the entire region, assume a light
+grey background, avoid text, and make sure it still works at half size. `tools/make-promo.py`
+follows it — a full-bleed brand gradient carrying only the sparkle mark and the wordmark, which
+stays readable when the store halves it:
+
+```bash
+python3 tools/make-promo.py                   # docs/promo/promo-440x280.png  (required)
+python3 tools/make-promo.py --size 1400x560   # docs/promo/promo-1400x560.png (marquee)
+```
+
+Both are written as 24-bit PNGs with no alpha, and the script verifies the header before finishing.
+
 **Store icon**
 
 The store takes the icon from the **package**, not from a separate upload field, so
