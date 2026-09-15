@@ -35,9 +35,22 @@ OUT_DEFAULT = "docs/promo/promo-440x280.png"
 
 # Canvas width : height, used to scale the layout for either store size.
 LAYOUT = {
-    (440, 280): dict(radius=62, font=64, gap=26, margin=34),
-    (1400, 560): dict(radius=124, font=128, gap=52, margin=68),
+    # 440x280 appears in a grid on its own, so the lockup is centred.
+    (440, 280): dict(radius=62, font=64, gap=26, margin=34, align="center"),
+    # 1400x560 appears in the carousel, where the store overlays the item name
+    # and description on the left: keep that side calm, push the lockup right.
+    (1400, 560): dict(radius=140, font=150, gap=56, margin=96, align="right"),
 }
+
+
+def left_scrim(size: tuple[int, int]) -> Image.Image:
+    """Darken the left edge so white text the store overlays keeps contrast."""
+    width, height = size
+    strip = Image.new("RGBA", (width, 1))
+    for x in range(width):
+        t = max(0.0, 1.0 - x / (width * 0.62))
+        strip.putpixel((x, 0), (12, 10, 32, round(96 * t)))
+    return strip.resize(size, Image.Resampling.NEAREST)
 
 
 def diagonal_gradient(size: tuple[int, int]) -> Image.Image:
@@ -65,21 +78,35 @@ def glow(size: tuple[int, int], centre: tuple[int, int], radius: int) -> Image.I
     return layer.filter(ImageFilter.GaussianBlur(radius * 0.55))
 
 
-def build(width: int, height: int) -> Image.Image:
+def build(width: int, height: int, align: str = "auto") -> Image.Image:
     cfg = LAYOUT.get((width, height)) or LAYOUT[(440, 280)]
-    scale = width / 440
     radius, gap, margin = cfg["radius"], cfg["gap"], cfg["margin"]
+    if align == "auto":
+        align = cfg["align"]
 
     canvas = diagonal_gradient((width, height)).convert("RGBA")
 
     font = ImageFont.truetype(FONT_BOLD, cfg["font"])
     probe = ImageDraw.Draw(Image.new("RGB", (1, 1)))
     text_w = probe.textlength("Glint", font=font)
-    text_h = cfg["font"]
 
-    # Centre the sparkle + wordmark lockup horizontally.
+    # Place the sparkle + wordmark lockup according to the layout.
     lockup = radius * 2 + gap + text_w
-    left = max(margin, (width - lockup) / 2)
+    if align == "right":
+        left = width - lockup - margin
+        canvas = Image.alpha_composite(canvas, left_scrim((width, height)))
+        # A faint oversized sparkle fills the calm side without competing with
+        # whatever text the store overlays there.
+        watermark = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+        ImageDraw.Draw(watermark).polygon(
+            astroid(width * 0.24, height / 2, radius * 1.45), fill=(255, 255, 255, 20)
+        )
+        canvas = Image.alpha_composite(canvas, watermark)
+    elif align == "left":
+        left = margin
+    else:
+        left = max(margin, (width - lockup) / 2)
+
     sparkle_cx = left + radius
     sparkle_cy = height / 2
 
@@ -136,6 +163,12 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--size", default="440x280", help="440x280 (required) or 1400x560 (marquee)")
     parser.add_argument("--output", default="", help=f"default: {OUT_DEFAULT}")
+    parser.add_argument(
+        "--align",
+        choices=("auto", "left", "center", "right"),
+        default="auto",
+        help="auto: centred for 440x280, right for the carousel marquee",
+    )
     args = parser.parse_args()
 
     width, height = (int(v) for v in args.size.lower().split("x"))
@@ -144,7 +177,7 @@ def main() -> None:
 
     out = Path(args.output or f"docs/promo/promo-{width}x{height}.png")
     out.parent.mkdir(parents=True, exist_ok=True)
-    build(width, height).save(out, "PNG", optimize=True)
+    build(width, height, args.align).save(out, "PNG", optimize=True)
     report(out, (width, height))
 
 

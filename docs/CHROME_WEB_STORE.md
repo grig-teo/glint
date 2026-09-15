@@ -181,6 +181,12 @@ python3 tools/make-promo.py --size 1400x560   # docs/promo/promo-1400x560.png (m
 
 Both are written as 24-bit PNGs with no alpha, and the script verifies the header before finishing.
 
+The two sizes use different layouts on purpose, because the store shows them differently. The
+marquee is **not localizable** and appears in the carousel with the item name and description drawn
+over it, so `--align auto` puts the lockup on the **right** and keeps the left side calm: a
+darkening scrim plus a faint watermark sparkle, which leaves contrast for whatever text the store
+puts there. The 440x280 tile sits alone in a grid, so it stays centred.
+
 **Store icon**
 
 The store takes the icon from the **package**, not from a separate upload field, so
