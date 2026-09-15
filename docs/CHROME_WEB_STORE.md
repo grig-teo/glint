@@ -68,57 +68,75 @@ Select text or just type: a ✨ appears, one click rewrites it in place. Bring y
 **Detailed description**
 
 ```
-Glint is a minimalist AI writing assistant. No sidebar, no dashboard, no
-account, no subscription — and no middleman server holding your text.
+Glint is a minimalist AI writing assistant for Chrome. It fixes the text you are
+already writing — in the field you are already typing in.
 
-TWO WAYS TO FIX YOUR WRITING
+WHAT IT DOES
 
-• Highlight text and a small "✨ Fix" button appears next to your selection.
-  Click it and just that text is rewritten.
+• Highlight a sentence and a small "✨ Fix" button appears beside it. One click
+  rewrites that text where it stands: spelling and grammar corrected, wording
+  made more fluent, meaning untouched.
 
-• Or don't select anything. Type in any field and a compact ✨ icon waits in the
-  field's top-right corner. Click it to fix everything in that field at once.
+• Or select nothing at all. Type into any text field and a compact ✨ icon waits
+  in the field's top-right corner. Click it and everything in that field is
+  polished in a single pass — a one-line search box or a full paragraph.
 
-The rewrite lands straight in the field you were already typing in. Your focus
-stays put, your cursor stays put, and Ctrl/Cmd+Z undoes it like any other edit.
-Text boxes in modern web apps (React, Vue, Svelte) stay in sync.
+• The result lands exactly where you were typing. Focus stays in the field, the
+  caret stays where it was, and Ctrl/Cmd+Z undoes the change like any other edit,
+  because Glint edits the field itself instead of opening a window of its own.
 
-BRING YOUR OWN KEY
+• It works in search boxes, comment boxes, contact forms, textareas and
+  rich-text editors, including the React and Vue apps whose inputs only accept
+  properly dispatched input events.
 
-Glint has no back end. It talks directly from your browser to the AI provider
-you choose, using your own API key:
+WHY INSTALL IT
 
-• OpenAI, Groq, OpenRouter, DeepSeek, Together — anything OpenAI-compatible
-• Anthropic, including its native Messages API
-• A local model via Ollama or LM Studio, with no key at all
+1. It stays out of your way. No sidebar, no dashboard, no panel covering the
+   page. A small button appears where you are writing and vanishes when you stop.
 
-One-click presets fill in the endpoint and model for each; every field stays
-editable if you use a gateway or a self-hosted model.
+2. There is no account and no subscription. You do not sign up for anything, and
+   there is no Glint server in the middle: your browser talks straight to the AI
+   provider you chose.
 
-MODES
+3. Bring your own key. Glint works with OpenAI, DeepSeek, Groq, OpenRouter,
+   Anthropic, or a model running locally through Ollama or LM Studio. If you
+   already pay for API access, you simply use it — no second bill, no per-seat
+   pricing, no free-tier limits imposed by a middleman.
 
-Fix grammar and fluency by default, or switch to Improve fluency, Shorten,
-Professional or Friendly — or write your own system prompt. Temperature and
-max tokens are there if you want them, and an "extra request body" field passes
-through provider-specific options (for example turning off DeepSeek's thinking
-mode so fixes stay fast).
+4. Your writing is not our business. There is no analytics, no telemetry, and
+   nothing is ever sent to the developer. Your API key is read only inside the
+   extension's service worker, so websites never get a reference to it. Glint
+   requests the smallest permission set it can work with.
 
-DARK AND LIGHT
+5. It adapts to how you write. Choose a mode — Fix grammar and fluency (default),
+   Shorten, Professional or Friendly — or write your own system prompt.
+   Temperature, max tokens and an extra request body are available when you need
+   to tune a specific provider.
 
-The widget and settings panel follow your system theme, and repaint instantly
-when you switch. Force Light or Dark when a particular site disagrees.
+6. It looks right in any theme. Light and dark palettes follow your system
+   setting and repaint the moment you switch, for both the floating button and
+   the settings panel. You can also force Light or Dark for a particular site.
 
-PRIVACY BY CONSTRUCTION
+7. It is small and auditable. Manifest V3, plain JavaScript, no dependencies, no
+   build step and no remote code — every line that runs is in the package you
+   installed, and the full source is public.
 
-• No account, no sign-in, no telemetry, no analytics, no advertising
-• Your API key is used only inside the extension's service worker, so web pages
-  never get a reference to it
-• Settings live in chrome.storage.local on your machine — not synced to Google
-• Nothing is sent to the developer. There is no server to send it to.
-• Not one line of remote code: everything ships in the package
+GETTING STARTED
 
-Built with Manifest V3, plain JavaScript, no dependencies and no build step. The
-full source is at https://github.com/grig-teo/glint
+1. Install Glint and click its toolbar icon.
+2. Paste an API key from your provider (the preset chips fill in the endpoint and
+   model for OpenAI, DeepSeek, Groq, OpenRouter, Anthropic or a local Ollama).
+3. Press Save, then Test, which performs one real request so you know it works.
+4. Go to any site you write on, select some text, and click ✨ Fix.
+
+WHAT GLINT DOES NOT DO
+
+It does not read pages in the background, does not collect statistics, does not
+show advertising, does not sell data, and does not upload anything until you
+click the button. It sends the text you asked it to fix to the API endpoint you
+configured — nothing else, and nowhere else.
+
+Source code and issue tracker: https://github.com/grig-teo/glint
 ```
 
 **Screenshots** — at least one is required (1280×800 or 640×400, PNG or JPEG, up
