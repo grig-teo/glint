@@ -139,8 +139,9 @@ configured — nothing else, and nowhere else.
 Source code and issue tracker: https://github.com/grig-teo/glint
 ```
 
-**Screenshots** — at least one is required (1280×800 or 640×400, PNG or JPEG, up
-to 5). Ready-made ones are in [`screenshots/`](screenshots/):
+**Screenshots** — required, up to 5. The store accepts **1280x800 or 640x400**, **JPEG or 24-bit
+PNG with no alpha channel**. Ready-made ones are in [`screenshots/`](screenshots/), and all four
+are already 1280x800 truecolour PNGs (colour type 2, no `tRNS` chunk), so they upload as-is:
 
 | File | Shows |
 | --- | --- |
