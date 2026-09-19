@@ -42,7 +42,6 @@ THEMES = {
         "accent": (140, 140, 255),
         "hairline": (255, 255, 255, 26),
         "shadow": (0, 0, 0, 150),
-        "panel_scale": 0.5,  # captures are usually 2x
     },
     "light": {
         "gradient": ((255, 255, 255), (231, 234, 240)),
@@ -51,7 +50,6 @@ THEMES = {
         "accent": (79, 70, 229),
         "hairline": (16, 18, 22, 24),
         "shadow": (16, 18, 22, 90),
-        "panel_scale": 0.5,
     },
 }
 
@@ -87,9 +85,11 @@ def build(args: argparse.Namespace) -> Image.Image:
     canvas = gradient((W, H), *theme["gradient"]).convert("RGBA")
 
     source = Image.open(args.input).convert("RGBA")
-    panel = source.resize(
-        (round(source.width * theme["panel_scale"]), round(source.height * theme["panel_scale"])),
-        Image.LANCZOS,
+    scale = args.panel_scale
+    panel = (
+        source
+        if scale == 1.0
+        else source.resize((round(source.width * scale), round(source.height * scale)), Image.LANCZOS)
     )
     radius = 16
     panel = rounded_panel(panel, radius)
@@ -170,6 +170,12 @@ def main() -> None:
     parser.add_argument("--output", required=True, help="PNG to write")
     parser.add_argument("--size", default="1280x800", help="1280x800 (preferred) or 640x400")
     parser.add_argument("--theme", choices=sorted(THEMES), default="dark")
+    parser.add_argument(
+        "--panel-scale",
+        type=float,
+        default=0.5,
+        help="scale applied to the capture: 0.5 for a 2x screenshot (default), 1.0 if already 1x",
+    )
     parser.add_argument("--title", required=True)
     parser.add_argument("--lead", default="")
     parser.add_argument("--accent", action="append", default=[], help="repeatable")
